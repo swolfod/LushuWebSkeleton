@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <% if (customizedMobile) { %>
+        <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no" />
+    <% } %>
+    <meta name="renderer" content="webkit" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title><%- pageTitle %></title>
+    <meta name="description" content="<%- pageDescription %>">
+    <link href="<%- staticHost %>/images/favorite.ico" type="image/x-icon" rel="Shortcut Icon" />
+    <link href="<%- staticHost %>/images/favorite.ico" type="image/x-icon" rel="Bookmark" />
+    <link href="<%- staticHost %>/images/favorite.ico" type="image/x-icon" rel="icon" />
+
+    <link rel="stylesheet" type="text/css" href="<%- staticHost %>/stylesheets/style.css">
+    <link rel="stylesheet" type="text/css" href="<%- staticHost %>/stylesheets/<%- clientCss %>">
+
+
+  <script type="text/template" id="globalCSSTemplate"></script>
+
+</head>
+<body>
+    <% if (allowLogTrace && gaKey) { %>
+        <!-- Google Tag Manager -->
+        <noscript><iframe src="//www.googletagmanager.com/ns.html?id=<%- gaKey %>"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','<%- gaKey %>');</script>
+        <!-- End Google Tag Manager -->
+    <% } %>
+
+    <% if (isIeOld) { %>
+    <div id="ieOld">
+      <div class="fullLogo"><i class="icon-logoShape logoShape"></i><i class="icon-logoTxtCn logoTxtCn"></i></div>
+      <div class="intro">
+        您的浏览器不能完美支持本网站的各项功能，如果您使用的是360等双核浏览器，<br/>
+        请切换到极速模式浏览。您也可以升级到以下浏览器使用：
+      </div>
+      <div class="browserList">
+        <a target="_blank" href="http://windows.microsoft.com/zh-cn/internet-explorer/download-ie"><i class="icon-ie"></i><br/>ie10+</a>
+        <a target="_blank" href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html"><i class="icon-chrome"></i><br/>chrome</a>
+        <a target="_blank" href="http://www.firefox.com.cn/download/"><i class="icon-firefox"></i><br/>firefox</a>
+      </div>
+    </div>
+    <% }else { %>
+    <div id="webMain" ref="pageTop">
+      <div><%- body %></div>
+      <%- state %>
+    </div>
+    <% } %>
+
+
+    <script>window.language_code="<%- language %>";</script>
+    <script>
+      var GLOBAL = {
+          production_static_host: "<%- staticHost %>",
+          google_map_host: "<%- googleMapDomain %>"
+      };
+    </script>
+    <script type="text/javascript" src="<%- staticHost %>/<%- clientScript %>"></script>
+    <script type="text/javascript" src="<%- googleMapDomain %>/maps/api/js?language=<%- language %>&libraries=places&key=<%- googleApiKey %>"></script>
+</body>
+</html>

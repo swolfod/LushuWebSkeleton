@@ -1,0 +1,26 @@
+@import "styles/colors";
+
+.examplePage {
+  font-size: 20px;
+  text-align: center;
+  margin-top: 200px;
+
+  .title {
+    position: relative;
+    width: 300px;
+    margin: 0 auto;
+    padding-bottom: 30px;
+    color: $color-textDarkGray;
+
+    &:after {
+      display: block;
+      content: " ";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom:0;
+      height: 2px;
+      background:url("/images/dotLine.png");
+    }
+  }
+}

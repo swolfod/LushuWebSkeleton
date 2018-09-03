@@ -1,0 +1,94 @@
+@mixin animation($duration, $timing:"ease") {
+  -webkit-transition: all $duration unquote($timing);
+  -moz-transition: all $duration unquote($timing);
+  transition: all $duration unquote($timing);
+}
+
+@mixin ellipseText() {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin ellipseLines($line:1) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: $line;
+  -webkit-box-orient: vertical;
+}
+
+@mixin centered() {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translateX(-50%) translateY(-50%);
+  -ms-transform: translateX(-50%) translateY(-50%);
+  transform: translateX(-50%) translateY(-50%);
+  -moz-transform: translateX(-50%) translateY(-50%);
+}
+
+@mixin verticalCentered() {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+  -moz-transform: translateY(-50%);
+}
+
+@mixin radius($radius) {
+  -webkit-border-radius: $radius;
+  -moz-border-radius: $radius;
+  border-radius: $radius;
+}
+
+@mixin box-shadow($props) {
+  -webkit-box-shadow: $props;
+  -moz-box-shadow: $props;
+  box-shadow: $props;
+}
+
+@mixin transform($props) {
+  transform: $props;
+  -ms-transform: $props;
+  -moz-transform: $props;
+  -webkit-transform: $props;
+  -o-transform: $props;
+}
+
+@mixin loadingContainer() {
+//  .loading {
+//    font-size: 40px;
+//    text-align: center;
+//    height: 60px;
+//    line-height: 60px;
+//    position: absolute;
+//    left: 0;
+//    right: 0;
+//    top: 50%;
+//    margin-top: -30px;
+//    padding: 0;
+//    color: $color-tosGreen;
+//  }
+}
+
+@mixin searchBar($size) {
+    height: $size;
+
+    .btn-search {
+        width: $size;
+        height: $size;
+        line-height: $size;
+    }
+
+    input {
+        padding: 0 $size;
+    }
+
+    .btn-clear-text {
+        width: $size;
+        height: $size;
+        line-height: $size;
+    }
+}

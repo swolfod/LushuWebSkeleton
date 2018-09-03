@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%- code %></title>
+    <link rel="stylesheet" type="text/css" href="<%- staticHost %>/stylesheets/style.css">
+</head>
+<body>
+    <div id="webMain">
+        <div>
+            <div class="emptyPageWrap">
+                <div class="navBarSpace">
+                    <div class="navBar">
+                        <div class="left">
+                            <a class="logo activeLink" href="/"></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="emptyPage">
+                    <span class="errorNumber"><%- code %></span>
+                    <div><%- message %></div>
+                    <pre><%- errorStack %></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
