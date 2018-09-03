@@ -1,6 +1,3 @@
-/**
- * Created by swolfod on 6/8/2016.
- */
 "use strict";
 
 var React = require('react');

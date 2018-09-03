@@ -20,6 +20,7 @@ const _ = require('lodash');
 const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const OptimizeCssAssetsPlugin = require("optimize-css-assets-webpack-plugin");
+const ExtraneousFileCleanupPlugin = require('webpack-extraneous-file-cleanup-plugin');
 const QiniuResourceManager = require("./gulpUploadQiniu");
 
 const devMode = process.env.NODE_ENV !== 'production';
@@ -129,8 +130,7 @@ function makeFrontendConfig(appConfig) {
             },
             plugins: [
                 new MiniCssExtractPlugin({
-                    filename: "stylesheets/" + configInfo.clientCssPrefix + timeStamp + ".css",
-                    chunkFilename: "stylesheets/[id].css"
+                    filename: "stylesheets/" + configInfo.clientCssPrefix + timeStamp + ".css"
                 })
             ],
             resolve: {
@@ -208,6 +208,7 @@ function makeBackendConfig(outFileName, appConfig) {
                 {
                     test: /\.(sa|sc|c)ss$/,
                     use: [
+                        MiniCssExtractPlugin.loader,
                         {
                             loader: 'css-loader',
                             options: {
@@ -229,7 +230,9 @@ function makeBackendConfig(outFileName, appConfig) {
                 banner: 'require("source-map-support").install();',
                 raw: true,
                 entryOnly: false
-            })
+            }),
+            new MiniCssExtractPlugin(),
+            new ExtraneousFileCleanupPlugin({extensions: ['.css']})
         ],
         resolve: {
             alias: alias
@@ -240,7 +243,10 @@ function makeBackendConfig(outFileName, appConfig) {
 var backendConfig = makeBackendConfig("website_server", "config");
 
 if(!devMode) {
-    backendConfig.plugins.push(new webpack.optimize.UglifyJsPlugin());
+    backendConfig.plugins.push(new UglifyJsPlugin({
+        cache: true,
+        parallel: true
+    }));
 }
 
 backendConfig = config(backendConfig);
@@ -385,9 +391,9 @@ if(!devMode) {
 
     gulp.task('build', function(done) {
         runSequence(
-           _.without(buildDepends, 'backend-build', 'gwbackend-build'),
+           _.without(buildDepends, 'backend-build'),
            'resources',
-           ['backend-build', 'gwbackend-build'],
+           'backend-build',
            done
         )
     });
