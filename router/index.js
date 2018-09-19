@@ -110,12 +110,6 @@ class Router {
 
         this.handlerViewTable = handlerViewTable;
 
-        if (!isServer) {
-            result["/:def"] = {
-                on: function() {window.location.replace(window.location.href);}
-            };
-        }
-
         return result;
     }
 
@@ -283,6 +277,7 @@ class Router {
         * Kick off routing.
         */
         this.initing = true;
+        this.directorRouter.notfound = function() {window.location.replace(window.location.href);};
         this.directorRouter.init();
 
         //note IE8 is being counted as 'modern' because it has the hashchange event
