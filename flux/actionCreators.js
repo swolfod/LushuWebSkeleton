@@ -132,7 +132,7 @@ class ActionCreators {
                 if (transitData){
                     that.app.actions.genericActionCreators.warmUpCache(warmUpCacheKey, transitData, constructCacheData(result));
                 }
-                else if (actionName && _.isFunction(that[actionName])) {
+                else if (actionName && _.isFunction(that[`${actionName}Done`])) {
                     actionParameters.push(result);
                     that[`${actionName}Done`](...actionParameters);
                 }
@@ -184,7 +184,7 @@ class ActionCreators {
                     result = preprocessResult(requestOptions, result);
 
                 actionParameters.push(result);
-                if (actionName && _.isFunction(that[actionName]))
+                if (actionName && _.isFunction(that[`${actionName}Done`]))
                     that[`${actionName}Done`](...actionParameters);
 
                 return result;
