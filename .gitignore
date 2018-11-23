@@ -36,6 +36,8 @@ npm-debug.log
 public/*
 static/release/*
 build
+.vscode
+.history
 
 .*.swo
 .*.swp

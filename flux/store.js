@@ -65,10 +65,16 @@ class Store {
             let that = this;
 
             let listener = function(payload, action) {
-                if (_.isArray(payload))
-                    return that[handler](...payload);
-                else
-                    return that[handler](payload);
+                try {
+                    if (_.isArray(payload))
+                        return that[handler](...payload);
+                    else
+                        return that[handler](payload);
+                }
+                catch(error) {
+                    console.error(error, error.stack);
+                    return false;
+                }
             };
 
             if (_.isArray(actions)) {
