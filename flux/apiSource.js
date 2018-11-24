@@ -198,6 +198,8 @@ class ApiSource {
                 return response.text().then(function(errMsg) {
                     try {
                         errMsg = JSON.parse(errMsg);
+                        if (_.isArray(errMsg))
+                            errMsg = errMsg[0];
                     }
                     catch(error) {}
 
