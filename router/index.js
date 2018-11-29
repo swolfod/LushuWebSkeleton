@@ -277,7 +277,15 @@ class Router {
         * Kick off routing.
         */
         this.initing = true;
-        this.directorRouter.notfound = function() {window.location.replace(window.location.href);};
+        this.directorRouter.notfound = () => {
+            if (typeof window != "undefined" && this.app.stores.routerStore.currentUrl) {
+                let path = window.location.pathname;
+                let prevPath = this.app.stores.routerStore.currentUrl;
+                window.history.back();
+                window.history.pushState({path: prevPath}, "", prevPath);
+                window.location.href = path;
+            }
+        };
         this.directorRouter.init();
 
         //note IE8 is being counted as 'modern' because it has the hashchange event
