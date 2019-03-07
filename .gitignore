@@ -36,6 +36,7 @@ npm-debug.log
 public/*
 static/release/*
 build
+package-lock.json
 .vscode
 .history
 

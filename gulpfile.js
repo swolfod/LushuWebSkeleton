@@ -372,7 +372,7 @@ function runServerMethod(scriptFile, port, debugPort) {
             watch: ['foo/'],
             ext: 'noop',
             env: { 'PORT': port },
-            nodeArgs: ['--debug=' + debugPort]
+            nodeArgs: ['--inspect=' + debugPort]
         }).on('restart', function() {
             restarted++;
             console.log('#' + restarted + ' restarted!');
