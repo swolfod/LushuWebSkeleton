@@ -259,7 +259,7 @@ function onBuild(done) {
             console.log('Error', err);
         }
         else {
-            console.log(stats.toString());
+            console.log(stats.toString("errors-only"));
         }
 
         if(done) {
@@ -301,7 +301,7 @@ gulp.task('backend-watch', backendWatchMethod(backendConfig));
 
 // Compile Our Scss
 gulp.task('scss', function() {
-    var gulpJob = gulp.src(['./styles/*.scss']);
+    var gulpJob = gulp.src(['./styles/*.scss', './styles/controls/*.scss']);
     if(devMode)
         gulpJob = gulpJob.pipe(sourcemaps.init());
 
