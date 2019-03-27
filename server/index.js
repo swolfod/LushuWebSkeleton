@@ -70,6 +70,18 @@ var configList = _.map(require("config"), (configInfo, index) => {
     };
 });
 
+let clientGeneralCss = "style.css";
+if (process.env.NODE_ENV == 'production') {
+    glob("public/stylesheets/style*.css", function (er, allStyleSheets) {
+        allStyleSheets = allStyleSheets.sort();
+        clientGeneralCss = allStyleSheets[allStyleSheets.length - 1];
+
+        let dirIndex = clientGeneralCss.lastIndexOf("/");
+        if (dirIndex >= 0)
+            clientGeneralCss = clientGeneralCss.slice(dirIndex + 1);
+    });
+}
+
 
 for (let i = 0; i < configList.length; i++) {
     let configInfo = configList[i].configInfo;
@@ -116,6 +128,7 @@ for (let i = 0; i < configList.length; i++) {
             locals.language = chineseIp ? "zh-CN" : "en";
             locals.clientScript = clientScript;
             locals.clientCss = clientCss;
+            locals.clientGeneralCss = clientGeneralCss;
             locals.customizedMobile = req.device.type == "phone";
             locals.allowLogTrace = ["example.com"].indexOf(req.hostname) > -1;
             locals.gaKey = config.gaKey;
