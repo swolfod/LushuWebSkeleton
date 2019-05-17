@@ -50,10 +50,10 @@ class RouterRoot extends React.Component {
         var rootComponent = routeHandler.get("root");
         if (rootComponent) {
             var handlerViewId = rootComponent.get("handler");
-            var handlerData = rootComponent.get("data");
+            var handlerData = rootComponent.get("data").toJS();
 
             var rootView = router.getHandlerView(handlerViewId);
-            handlers.push({view: rootView, data: handlerData.toJS()});
+            handlers.push({view: rootView, data: handlerData});
             rootHandler = rootView.getPageView ? rootView.getPageView(app, handlerData) : React.createElement(rootView, handlerData);
         }
 

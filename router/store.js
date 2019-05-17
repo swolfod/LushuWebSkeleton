@@ -184,7 +184,7 @@ class RouterStore extends Store {
         this.state = this.state.set("readyToRender", true);
     }
 
-    pageLeftScrollPos(pageUrl) {
+    static pageLeftScrollPos(pageUrl) {
         return this.state.get("pageLeftScrollPos", Immutable.Map()).get(pageUrl);
     }
 

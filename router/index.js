@@ -412,9 +412,10 @@ class Router {
 
         if (!options)
             options = {};
-        options.fromApp = true;
 
-        this.navOptions = options;
+        this.navOptions = {fromApp: true, scrollToTop: true};
+        _.assign(this.navOptions, options);
+    
         let onChangeFunc = this.directorRouter.history === true ? window.onpopstate : window.onhashchange;
         if (onChangeFunc) {
             this.directorRouter.setRoute(route);
