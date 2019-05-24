@@ -279,7 +279,7 @@ class Router {
         this.initing = true;
         this.directorRouter.notfound = () => {
             if (typeof window != "undefined" && this.app.stores.routerStore.currentUrl) {
-                let path = window.location.pathname;
+                let path = window.location.href;
                 // let prevPath = this.app.stores.routerStore.currentUrl;
                 // window.history.back();
                 // window.history.pushState({path: prevPath}, "", prevPath);
