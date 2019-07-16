@@ -4,7 +4,6 @@
 var _ = require("lodash");
 var Immutable = require("immutable");
 var Store = require("flux/store");
-var Perf = require("react-addons-perf");
 
 class RouterStore extends Store {
     constructor() {
@@ -31,9 +30,11 @@ class RouterStore extends Store {
             transitionFailed: routerActionCreators.transitionFailed,
             cancelTransit: routerActionCreators.cancelTransit,
             warmUpDone: routerActionCreators.warmUpDone,
+            warmUpFailed: routerActionCreators.warmUpFailed,
             setPageTitle: routerActionCreators.setPageTitle,
             setPageDescription: routerActionCreators.setPageDescription,
-            readyToRender: routerActionCreators.readyToRender
+            readyToRender: routerActionCreators.readyToRender,
+            inSiteRedirect: routerActionCreators.inSiteRedirect
         };
 
         this.exportPublicMethods({
@@ -65,7 +66,6 @@ class RouterStore extends Store {
     }
 
     transitionStart(transitId, handlerConfig, transitData, navOptions) {
-        //Perf.start();
 
         let pageLeftScrollPos = this.state.get("pageLeftScrollPos", Immutable.Map());
 
@@ -162,6 +162,10 @@ class RouterStore extends Store {
         })).set("routeData", transitData).set("navStamp", currentStamp);
 
     }
+    
+    warmUpFailed(transitId, transitData, reason) {
+        this.warmUpDone(transitId, transitData);
+    }
 
     setPageTitle(transitId, title) {
         if (transitId && this.state.get("transitId") != transitId)
@@ -182,6 +186,10 @@ class RouterStore extends Store {
             return;
 
         this.state = this.state.set("readyToRender", true);
+    }
+
+    inSiteRedirect() {
+        this.state = this.state.set("redirecting", true);
     }
 
     static pageLeftScrollPos(pageUrl) {
@@ -205,18 +213,13 @@ class RouterStore extends Store {
         this.state = this.state.set("currentUrl", currentUrl);
         this.clearTransitionState();
 
-        // setTimeout(() => {
-        //     Perf.stop();
-        //     Perf.printInclusive();
-        //     Perf.printExclusive();
-        // })
     }
 
     transitionFailed(transitId, error) {
         if (this.state.get("transitId") != transitId)
             return;
 
-        this.clearTransitionState();
+        //this.clearTransitionState();
         this.state = this.state.set("error", error);
     }
 
