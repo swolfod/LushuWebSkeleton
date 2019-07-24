@@ -45,7 +45,19 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
+
+if (app.get('env') === 'production') {
+app.use(logger('combined', {
+        skip: function (req, res) {
+            return res.statusCode < 400
+        },
+        stream: process.stderr
+    }));
+} else {
+    app.use(logger('dev'));
+}
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -53,32 +65,32 @@ app.use(device.capture());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
 
-var Router = require('../router');
-var routerMiddleware = require('../router/express_middleware');
-var applicationCreator = require("../application");
+const Router = require('../router');
+const routerMiddleware = require('../router/express_middleware');
+const applicationCreator = require("../application");
 
 
-var appConfigList = [
+const appConfigList = [
    require("config0"), require("config1"), require("config2"), require("config3"), require("config4"),
    require("config5"), require("config6"), require("config7"), require("config8"), require("config9"),
 ];
 
-var configList = _.map(require("config"), (configInfo, index) => {
+const configList = _.map(require("config"), (configInfo, index) => {
     return {
         configInfo: configInfo,
         config: appConfigList[index]
     };
 });
 
-let clientGeneralCss = "style.css";
+let clientGenericCss = "style.css";
 if (process.env.NODE_ENV == 'production') {
     glob("public/stylesheets/style*.css", function (er, allStyleSheets) {
         allStyleSheets = allStyleSheets.sort();
-        clientGeneralCss = allStyleSheets[allStyleSheets.length - 1];
+        clientGenericCss = allStyleSheets[allStyleSheets.length - 1];
 
-        let dirIndex = clientGeneralCss.lastIndexOf("/");
+        let dirIndex = clientGenericCss.lastIndexOf("/");
         if (dirIndex >= 0)
-            clientGeneralCss = clientGeneralCss.slice(dirIndex + 1);
+            clientGenericCss = clientGenericCss.slice(dirIndex + 1);
     });
 }
 
@@ -86,30 +98,48 @@ if (process.env.NODE_ENV == 'production') {
 for (let i = 0; i < configList.length; i++) {
     let configInfo = configList[i].configInfo;
     let config = configList[i].config;
-    let clientScript = "{0}.js".format(configInfo.clientJsPrefix);
-    let clientCss = "{0}.css".format(configInfo.clientCssPrefix);
+    configInfo.clientScript = "{0}.js".format(configInfo.clientJsPrefix);
+    configInfo.clientCss = "{0}.css".format(configInfo.clientCssPrefix);
+    let customGenericCss = configInfo.clientGenricCss ? "{0}.css".format(configInfo.clientGenricCss.prefix) : null;
+    let appName = configInfo.appName;
+
     if (process.env.NODE_ENV == 'production') {
         glob("public/{0}*.js".format(configInfo.clientJsPrefix), function (er, allScripts) {
             allScripts = allScripts.sort();
-            clientScript = allScripts[allScripts.length - 1];
+            configInfo.clientScript = allScripts[allScripts.length - 1];
     
-            let dirIndex = clientScript.lastIndexOf("/");
+            let dirIndex = configInfo.clientScript.lastIndexOf("/");
             if (dirIndex >= 0)
-                clientScript = clientScript.slice(dirIndex + 1);
+                configInfo.clientScript = configInfo.clientScript.slice(dirIndex + 1);
         });
     
         glob("public/stylesheets/{0}*.css".format(configInfo.clientCssPrefix), function (er, allStyleSheets) {
             allStyleSheets = allStyleSheets.sort();
-            clientCss = allStyleSheets[allStyleSheets.length - 1];
-    
-            let dirIndex = clientCss.lastIndexOf("/");
-            if (dirIndex >= 0)
-                clientCss = clientCss.slice(dirIndex + 1);
+            if (!allStyleSheets.length) {
+                console.error(configInfo);
+            }
+            else {
+                configInfo.clientCss = allStyleSheets[allStyleSheets.length - 1];
+                let dirIndex = configInfo.clientCss.lastIndexOf("/");
+                if (dirIndex >= 0)
+                    configInfo.clientCss = configInfo.clientCss.slice(dirIndex + 1);
+            }
         });
+
+        if (customGenericCss) {
+            glob("public/stylesheets/{0}*.css".format(configInfo.clientGenricCss.prefix), function (er, allStyleSheets) {
+                allStyleSheets = allStyleSheets.sort();
+                customGenericCss = allStyleSheets[allStyleSheets.length - 1];
+        
+                let dirIndex = customGenericCss.lastIndexOf("/");
+                if (dirIndex >= 0)
+                    customGenericCss = customGenericCss.slice(dirIndex + 1);
+            });
+        }
     }
 
     let ApplicationClass = applicationCreator.createAppClass(config);
-    
+
     let router = new Router(config.routes, ApplicationClass, {
         strict: false,
         loginUrl: config.loginUrl || "/login",
@@ -118,17 +148,19 @@ for (let i = 0; i < configList.length; i++) {
         defaultLocals: function(req) {
             let locals = {};
 
-            var chineseIp = isChineseIp(req.connection.remoteAddress);
-            var ieOld = isIeOld(req);
+            const chineseIp = isChineseIp(req.connection.remoteAddress);
+            const ieOld = isIeOld(req);
     
             GLOBAL.google_map_host = chineseIp ? "//ditu.google.cn" : "//maps.googleapis.com";
             GLOBAL.google_api_key = secrets.google.API_KEY;
             locals.googleMapDomain = GLOBAL.google_map_host;
             locals.googleApiKey = GLOBAL.google_api_key;
             locals.language = chineseIp ? "zh-CN" : "en";
-            locals.clientScript = clientScript;
-            locals.clientCss = clientCss;
-            locals.clientGeneralCss = clientGeneralCss;
+            locals.clientScript = configInfo.clientScript;
+            locals.clientCss = configInfo.clientCss;
+            locals.appName = appName;
+            locals.customGenericCss = customGenericCss;
+            locals.clientGenericCss = clientGenericCss;
             locals.customizedMobile = req.device.type == "phone";
             locals.allowLogTrace = ["example.com"].indexOf(req.hostname) > -1;
             locals.gaKey = config.gaKey;
@@ -139,7 +171,7 @@ for (let i = 0; i < configList.length; i++) {
             return locals;
         }
     });
-    
+
     app.use(routerMiddleware({
         router: router
     }));
@@ -156,11 +188,17 @@ app.use(function(req, res, next) {
 app.use(function(err, req, res, next) {
     let code = err.status || err.errorCode || 500;
     res.status(code);
+
+    let configInfo = configList[0].configInfo;
+    let clientCss = configInfo.clientCss || "{0}.css".format(configInfo.clientCssPrefix);
+
     res.render('error', {
         code: code,
         message: code == 404 ? '页面不存在' : '页面发生错误',
         errorStack: app.get('env') === 'development' ? err.stack : '',
-        staticHost: GLOBAL.production_static_host
+        staticHost: GLOBAL.production_static_host,
+        clientCss: clientCss,
+        clientGenericCss: clientGenericCss
     });
 });
 

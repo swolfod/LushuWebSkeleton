@@ -12,6 +12,7 @@ class RouterActionCreators extends ActionCreators {
            "readyToRender",
            "configureRouter",
            "initNewNavigation",
+           "inSiteRedirect",
            "cancelTransit",
            "popToView",
            "setPageTitle",

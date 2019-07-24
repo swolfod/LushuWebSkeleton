@@ -279,6 +279,10 @@ class Router {
         this.initing = true;
         this.directorRouter.notfound = () => {
             if (typeof window != "undefined" && this.app.stores.routerStore.currentUrl) {
+                if (this.options && this.options.siteHost && window.location.href.startsWith(this.options.siteHost)) {
+                    this.app.actions.routerActionCreators.inSiteRedirect();
+                }
+
                 let path = window.location.href;
                 // let prevPath = this.app.stores.routerStore.currentUrl;
                 // window.history.back();
