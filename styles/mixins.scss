@@ -57,20 +57,47 @@
   -o-transform: $props;
 }
 
-@mixin loadingContainer() {
-//  .loading {
-//    font-size: 40px;
-//    text-align: center;
-//    height: 60px;
-//    line-height: 60px;
-//    position: absolute;
-//    left: 0;
-//    right: 0;
-//    top: 50%;
-//    margin-top: -30px;
-//    padding: 0;
-//    color: $color-tosGreen;
-//  }
+@mixin flex(){
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+@mixin flexVertical(){
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+@mixin flexSpaceBetween(){
+  -webkit-box-pack: justify;
+  -webkit-justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+@mixin flexSpaceEvenly(){
+  -webkit-justify-content: space-evenly;
+  justify-content: space-evenly;
+}
+
+@mixin flexCenter(){
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+@mixin clearfix() {
+  zoom: 1;
+  &::before,
+  &::after {
+    content: '';
+    display: table;
+  }
+  &::after {
+    clear: both;
+  }
 }
 
 @mixin searchBar($size) {
