@@ -4,13 +4,13 @@
   transition: all $duration unquote($timing);
 }
 
-@mixin ellipseText() {
+@mixin ellipsisText() {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-@mixin ellipseLines($line:1) {
+@mixin ellipsisLines($line:1) {
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
