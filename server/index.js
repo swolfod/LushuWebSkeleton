@@ -15,9 +15,11 @@ const secrets = require("secrets");
 require('node-jsx').install({extension: '.jsx'});
 require("../lib/extensions");
 
-GLOBAL.server_rest_host = hosts.serverRestHost;
-GLOBAL.server_secure_rest_host = hosts.serverSecureRestHost;
-GLOBAL.production_static_host = "production" == process.env.NODE_ENV ? hosts.qiniu.staticHost : "";
+global.GLOBAL = {
+    server_rest_host: hosts.serverRestHost,
+    server_secure_rest_host: hosts.serverSecureRestHost,
+    production_static_host: "production" == process.env.NODE_ENV ? hosts.qiniu.staticHost : "",
+};
 
 const fs = require('fs');
 const path = require('path');

@@ -5,8 +5,9 @@ var Alt = require('alt');
 var _ = require("lodash");
 var hosts = require("./lib/hosts");
 
-var host = typeof GLOBAL != "undefined" && GLOBAL.server_rest_host ? GLOBAL.server_rest_host : hosts.restHost;
-var secureHost = typeof GLOBAL != "undefined" && GLOBAL.server_secure_rest_host ? GLOBAL.server_secure_rest_host : hosts.secureRestHost;
+const isServer = typeof process != "undefined" && !process.browser;
+const host = isServer ? hosts.serverRestHost : hosts.restHost;
+const secureHost = isServer ? hosts.serverSecureRestHost : hosts.secureRestHost;
 
 var {DataHub} = require("flux/dataHub");
 

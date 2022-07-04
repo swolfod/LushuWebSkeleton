@@ -268,17 +268,17 @@ function onBuild(done) {
     }
 }
 
-gulp.task('frontend-build', function(done) {
+gulp.task('frontend-build', gulp.series(function(done) {
     webpack(frontendConfigList).run(onBuild(done));
-});
+}));
 
-gulp.task('frontend-watch', function() {
+gulp.task('frontend-watch', gulp.series(function() {
     webpack(frontendConfigList).watch(300, onBuild());
-});
+}));
 
-gulp.task('backend-build', function(done) {
+gulp.task('backend-build', gulp.series(function(done) {
     webpack(backendConfig).run(onBuild(done));
-});
+}));
 
 function backendWatchMethod(config) {
     return function(done) {
@@ -297,10 +297,10 @@ function backendWatchMethod(config) {
 }
 
 
-gulp.task('backend-watch', backendWatchMethod(backendConfig));
+gulp.task('backend-watch', gulp.series(backendWatchMethod(backendConfig)));
 
 // Compile Our Scss
-gulp.task('scss', function() {
+gulp.task('scss', gulp.series(function() {
     var gulpJob = gulp.src(['./styles/*.scss', './styles/controls/*.scss']);
     if(devMode)
         gulpJob = gulpJob.pipe(sourcemaps.init());
@@ -323,36 +323,36 @@ gulp.task('scss', function() {
         });
 
     return gulpJob;
-});
+}));
 
-gulp.task('images', function() {
+gulp.task('images', gulp.series(function() {
     return gulp.src("./styles/images/**/*").pipe(gulp.dest("public/images"));
-});
+}));
 
-gulp.task('images-watch', function() {
-    gulp.watch('styles/images/*.*', ['images']);
-});
+gulp.task('images-watch', gulp.series(function() {
+    gulp.watch('styles/images/*.*', gulp.series('images'));
+}));
 
-gulp.task('libs', function() {
-    var libsJob = gulp.src([
-        //Add this line if you need to remotely import components
-        //'./lib/babel.min.js'
-    ]);
+gulp.task('libs', gulp.series(function() {
+    //Add this line if you need to remotely import components
+    // var libsJob = gulp.src([
+    //     './lib/babel.min.js'
+    // ], {allowEmpty: true});
 
-    return libsJob.pipe(gulp.dest("public/js")).pipe(uglify());
-});
+    // return libsJob.pipe(gulp.dest("public/js")).pipe(uglify());
+}));
 
-gulp.task('robots', function() {
+gulp.task('robots', gulp.series(function() {
     var libsJob = gulp.src([
         './lib/robots.txt'
     ]);
 
     return libsJob.pipe(gulp.dest("public"));
-});
+}));
 
-gulp.task('styles-watch', function() {
-    gulp.watch('./styles/*.scss', ['scss']);
-});
+gulp.task('styles-watch', gulp.series(function() {
+    gulp.watch('./styles/*.scss', gulp.series('scss'));
+}));
 
 
 
@@ -385,20 +385,20 @@ var buildDepends = ['frontend-build', 'backend-build', 'images', 'scss', 'libs',
 var watchDepends = ['frontend-watch', 'backend-watch', 'styles-watch', 'images-watch'];
 var runDepends = ['frontend-watch', 'backend-watch', 'scss', 'styles-watch', 'images', 'images-watch', 'libs', 'robots'];
 if(!devMode) {
-    gulp.task('resources', function(done) {
+    gulp.task('resources', gulp.series(function(done) {
         new QiniuResourceManager().upload(done)();
-    });
+    }));
 
-    gulp.task('build', function(done) {
+    gulp.task('build', gulp.series(function(done) {
         runSequence(
            _.without(buildDepends, 'backend-build'),
            'resources',
            'backend-build',
            done
         )
-    });
+    }));
 
-    gulp.task('resources-watch', ['resources'], function() {
+    gulp.task('resources-watch', gulp.series('resources', function() {
         var timer = 0;
         /*
          * gulp.watch will not react to the added and deleted events,
@@ -411,29 +411,29 @@ if(!devMode) {
                 new QiniuResourceManager().upload()();
             }, 500);
         });
-    });
+    }));
 
-    gulp.task('watch', function(done) {
+    gulp.task('watch', gulp.series(function(done) {
         runSequence(
            _.without(watchDepends, 'backend-watch'),
            'resources-watch',
            'backend-watch',
            done
         )
-    });
+    }));
 
-    gulp.task('run', function(done) {
+    gulp.task('run', gulp.series(function(done) {
         runSequence(
            _.without(runDepends, 'backend-watch'),
            'resources-watch',
            'backend-watch',
            runServerMethod('build/website_server', hosts.port, '41498')
         )
-    });
+    }));
 } else {
-    gulp.task('build', buildDepends);
+    gulp.task('build', gulp.parallel(buildDepends));
 
-    gulp.task('watch', watchDepends);
+    gulp.task('watch', gulp.parallel(watchDepends));
 
-    gulp.task('run', runDepends, runServerMethod('build/website_server', hosts.port, '41498'));
+    gulp.task('run', gulp.parallel(runDepends, runServerMethod('build/website_server', hosts.port, '41498')));
 }
